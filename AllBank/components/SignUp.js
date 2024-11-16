@@ -1,88 +1,92 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { encryptData } from '../utils/encryption';
-import { createUser } from '../utils/pinata';
+import React, { useState } from "react";
+import { View, TextInput, Button, Text, StyleSheet } from "react-native";
+import { signUpUser } from "../utils/firebaseAuth"; // Assuming firebaseAuth.js contains Firebase functions
 
-export default function SignUp({ navigation }) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+const SignUp = ({ navigation }) => {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [error, setError] = useState("");
 
-  const handleSignUp = async () => {
-    setLoading(true);
-    try {
-      const encryptedData = encryptData({ name, email, password });
-      const hash = await createUser({ name, email, encryptedData });
-      alert(`Sign Up Successful! IPFS Hash: ${hash}`);
-      navigation.navigate('Login');
-    } catch (error) {
-      alert('Sign Up Failed. Please try again.');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+	const handleSignUp = async () => {
+		setError(""); // Clear previous errors
+		if (!email.includes("@")) {
+			setError("Please enter a valid email address.");
+			return;
+		}
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create an Account</Text>
-      <TextInput
-        placeholder="Name"
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Signing Up...' : 'Sign Up'}</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
+		if (password.length < 6) {
+			setError("Password must be at least 6 characters long.");
+			return;
+		}
+
+		try {
+			const { user } = await signUpUser(email, password);
+			console.log("User signed up successfully:", user);
+			navigation.navigate("Login"); // Navigate to Login screen after sign-up
+		} catch (err) {
+			setError(err.message);
+		}
+	};
+
+	return (
+		<View style={styles.container}>
+			<Text style={styles.title}>Sign Up</Text>
+			{error ? <Text style={styles.error}>{error}</Text> : null}
+			<TextInput
+				style={styles.input}
+				placeholder="Email"
+				value={email}
+				onChangeText={(text) => setEmail(text)}
+				keyboardType="email-address"
+				autoCapitalize="none"
+			/>
+			<TextInput
+				style={styles.input}
+				placeholder="Password"
+				value={password}
+				onChangeText={(text) => setPassword(text)}
+				secureTextEntry
+			/>
+			<Button title="Sign Up" onPress={handleSignUp} />
+			<Text
+				style={styles.link}
+				onPress={() => navigation.navigate("Login")}
+			>
+				Already have an account? Log In
+			</Text>
+		</View>
+	);
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#F7F9FB',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#7399C6',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
-    backgroundColor: '#fff',
-  },
-  button: {
-    backgroundColor: '#7399C6',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+	container: {
+		flex: 1,
+		justifyContent: "center",
+		padding: 20,
+	},
+	title: {
+		fontSize: 24,
+		fontWeight: "bold",
+		textAlign: "center",
+		marginBottom: 20,
+	},
+	input: {
+		borderWidth: 1,
+		borderColor: "#ccc",
+		padding: 10,
+		marginBottom: 10,
+		borderRadius: 5,
+	},
+	error: {
+		color: "red",
+		textAlign: "center",
+		marginBottom: 10,
+	},
+	link: {
+		color: "blue",
+		marginTop: 20,
+		textAlign: "center",
+	},
 });
+
+export default SignUp;
