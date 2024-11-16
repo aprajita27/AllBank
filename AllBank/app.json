@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "AllBank",
+    "slug": "AllBank",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "extra": {
+      "PINATA_API_KEY": "0db3078d5f3fd400f62e",
+      "PINATA_SECRET_API_KEY": "1251d68db6ccc55d61dc543d1b179ecb1b639f8ea3d114e4d8a7304fd02b5f4c",
+      "SAMBANOVA_API_KEY": "0e763386-73f7-4d77-a7f1-9a67099f90fd"
+    },
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
