@@ -53,7 +53,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig"; // Firestore instance
 import { auth } from "../firebaseConfig"; // Firebase Auth instance
 import Banking from "./Banking";
-import Investing from "./Investing";
+import InvestmentDashboard from "./InvestmentDashboard";
 import AIBanker from "./AIBanker";
 import Profile from "./Profile";
 
@@ -122,7 +122,7 @@ export default function Home({ navigation }) {
 				tabBarIcon: ({ color, size }) => {
 					let iconName;
 					if (route.name === "Banking") iconName = "card-outline";
-					else if (route.name === "Investing")
+					else if (route.name === "InvestmentDashboard")
 						iconName = "stats-chart-outline";
 					else if (route.name === "AI Banker")
 						iconName = "chatbubble-ellipses-outline";
@@ -148,7 +148,7 @@ export default function Home({ navigation }) {
 			})}
 		>
 			<Tab.Screen name="Banking" component={Banking} />
-			<Tab.Screen name="Investing" component={Investing} />
+			<Tab.Screen name="InvestmentDashboard" component={InvestmentDashboard} />
 			<Tab.Screen name="AI Banker" component={AIBanker} />
 			<Tab.Screen name="Profile" component={Profile} />
 		</Tab.Navigator>
