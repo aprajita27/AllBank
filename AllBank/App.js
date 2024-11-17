@@ -9,6 +9,11 @@ import SendMoney from "./components/SendMoney"; // Replace with your actual Send
 import Home from "./components/Home"; // Replace with your actual Home screen
 import { auth } from "./firebaseConfig"; // Import Firebase Auth
 // import initializeMockData from "./Scripts/initializeMockData";
+import GoalBasedSavings from "./components/GoalBasedSavings";
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import insertMockData from "./utils/insertMockData";
+
 
 const Stack = createStackNavigator();
 
@@ -25,6 +30,25 @@ export default function App() {
 		});
 		return unsubscribe; // Cleanup on unmount
 	}, []);
+
+	// useEffect(() => {
+	// 	insertMockData();
+	// }, []);
+
+
+	useEffect(() => {
+        const registerForPushNotifications = async () => {
+            const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+            if (status !== "granted") {
+                const { status: newStatus } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+                if (newStatus !== "granted") return;
+            }
+            const token = await Notifications.getExpoPushTokenAsync();
+            console.log("Notification Token:", token);
+        };
+        registerForPushNotifications();
+    }, []);
+
 
 	// Show a loading spinner while determining auth state
 	if (loading) {
@@ -51,6 +75,7 @@ export default function App() {
 						/>
 						<Stack.Screen name="SignUp" component={SignUp} />
 						<Stack.Screen name="Login" component={Login} />
+						
 					</>
 				)}
 			</Stack.Navigator>
