@@ -30,7 +30,7 @@ const Login = ({ navigation }) => {
 		try {
 			const { user } = await loginUser(email, password);
 			console.log("User logged in successfully:", user);
-			navigation.navigate("Dashboard"); // Navigate to Dashboard after login
+			// navigation.navigate("Dashboard"); // Navigate to Dashboard after login
 		} catch (err) {
 			setError(err.message);
 		}
