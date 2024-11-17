@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Onboarding from "./components/Onboarding";
 import SignUp from "./components/SignUp";
 import Login from "./components/Login";
+import CreateAccount from "./components/CreateAccount";
 import Home from "./components/Home"; // Replace with your actual Home screen
 import { auth } from "./firebaseConfig"; // Import Firebase Auth
 import GoalBasedSavings from "./components/GoalBasedSavings";
@@ -54,7 +55,13 @@ export default function App() {
 		<NavigationContainer>
 			<Stack.Navigator screenOptions={{ headerShown: false }}>
 				{isLoggedIn ? (
-					<Stack.Screen name="Home" component={Home} />
+					<>
+						<Stack.Screen name="Home" component={Home} />
+						<Stack.Screen
+							name="CreateAccount"
+							component={CreateAccount}
+						/>
+					</>
 				) : (
 					<>
 						<Stack.Screen
