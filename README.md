@@ -31,11 +31,6 @@ AllBank offers a holistic financial management experience:
 - **Google Gemini AI**: To power financial assistance and analytics.
 - **Node.js**: For additional backend API integrations.
 
-### Tools and Libraries:
-- **react-native-qrcode-scanner**: For QR payment scanning.
-- **react-native-permissions**: For managing device permissions.
-- **react-native-pdf**: For exporting and sharing transaction statements.
-- **react-navigation**: For efficient navigation between screens.
 
 ## Challenges we ran into
 - **Complex Data Handling**: Designing a robust schema to accommodate dynamic features like goal-based savings and AI-driven insights.
