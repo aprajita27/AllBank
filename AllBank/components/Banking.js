@@ -364,7 +364,7 @@ export default function Banking({ navigation }) {
 							</Text>
 							<Text style={styles.cardText}>CVV: {virtualCard.cvv}</Text>
 						</View>
-						<Text style={styles.cardText}>Card Holder Name: John Doe</Text>
+						<Text style={styles.cardText}>Card Holder Name: Jane Smith</Text>
 						<TouchableOpacity
 							style={styles.closeButton}
 							onPress={() => setModalVisible(false)}
