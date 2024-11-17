@@ -8,7 +8,6 @@ import {
   Alert,
   FlatList,
   Modal,
-  ProgressBarAndroid,
 } from "react-native";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
@@ -165,12 +164,12 @@ export default function GoalBasedSavings() {
             <Text style={styles.progressText}>
               ${item.savedAmount.toFixed(2)} / ${item.targetAmount.toFixed(2)}
             </Text>
-            <ProgressBarAndroid
+            {/* <ProgressBarAndroid
               styleAttr="Horizontal"
               indeterminate={false}
               progress={item.savedAmount / item.targetAmount}
               color="#7399C6"
-            />
+            /> */}
             <TextInput
               style={styles.input}
               placeholder="Enter contribution amount"
