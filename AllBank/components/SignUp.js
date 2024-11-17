@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet } from "react-native";
-import { signUpUser } from "../utils/firebaseAuth"; // Assuming firebaseAuth.js contains Firebase functions
+import {
+	View,
+	TextInput,
+	Text,
+	TouchableOpacity,
+	StyleSheet,
+} from "react-native";
+import * as Animatable from "react-native-animatable";
+import { signUpUser } from "../utils/firebaseAuth"; // Firebase auth logic
 
 const SignUp = ({ navigation }) => {
 	const [email, setEmail] = useState("");
@@ -30,30 +37,50 @@ const SignUp = ({ navigation }) => {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>Sign Up</Text>
-			{error ? <Text style={styles.error}>{error}</Text> : null}
-			<TextInput
-				style={styles.input}
-				placeholder="Email"
-				value={email}
-				onChangeText={(text) => setEmail(text)}
-				keyboardType="email-address"
-				autoCapitalize="none"
-			/>
-			<TextInput
-				style={styles.input}
-				placeholder="Password"
-				value={password}
-				onChangeText={(text) => setPassword(text)}
-				secureTextEntry
-			/>
-			<Button title="Sign Up" onPress={handleSignUp} />
-			<Text
-				style={styles.link}
-				onPress={() => navigation.navigate("Login")}
+			<Animatable.Text animation="bounceIn" style={styles.title}>
+				Sign Up
+			</Animatable.Text>
+
+			{error ? (
+				<Animatable.Text animation="fadeIn" style={styles.error}>
+					{error}
+				</Animatable.Text>
+			) : null}
+
+			<Animatable.View
+				animation="slideInUp"
+				style={styles.inputContainer}
 			>
-				Already have an account? Log In
-			</Text>
+				<TextInput
+					style={styles.input}
+					placeholder="Email"
+					value={email}
+					onChangeText={setEmail}
+					keyboardType="email-address"
+					autoCapitalize="none"
+				/>
+				<TextInput
+					style={styles.input}
+					placeholder="Password"
+					value={password}
+					onChangeText={setPassword}
+					secureTextEntry
+				/>
+			</Animatable.View>
+
+			<TouchableOpacity
+				style={styles.buttonPrimary}
+				onPress={handleSignUp}
+			>
+				<Text style={styles.buttonText}>Sign Up</Text>
+			</TouchableOpacity>
+
+			<TouchableOpacity onPress={() => navigation.navigate("Login")}>
+				<Text style={styles.footerText}>
+					Already have an account?{" "}
+					<Text style={styles.linkText}>Log In</Text>
+				</Text>
+			</TouchableOpacity>
 		</View>
 	);
 };
@@ -62,29 +89,61 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "#F8F9FA",
 		padding: 20,
 	},
 	title: {
-		fontSize: 24,
+		fontSize: 32,
 		fontWeight: "bold",
+		color: "#333",
+		marginBottom: 20,
 		textAlign: "center",
+	},
+	inputContainer: {
+		width: "100%",
+		alignItems: "center",
 		marginBottom: 20,
 	},
 	input: {
 		borderWidth: 1,
 		borderColor: "#ccc",
-		padding: 10,
+		backgroundColor: "#fff",
+		borderRadius: 8,
+		padding: 12,
 		marginBottom: 10,
-		borderRadius: 5,
+		fontSize: 16,
+		width: "80%",
+	},
+	buttonPrimary: {
+		backgroundColor: "#7399C6",
+		paddingVertical: 15,
+		borderRadius: 50,
+		width: "80%",
+		alignItems: "center",
+		marginBottom: 15,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.3,
+		shadowRadius: 6,
+		elevation: 5,
+	},
+	buttonText: {
+		color: "#fff",
+		fontSize: 18,
+		fontWeight: "bold",
+	},
+	footerText: {
+		fontSize: 14,
+		color: "#333",
+	},
+	linkText: {
+		color: "#7399C6",
+		fontWeight: "bold",
 	},
 	error: {
 		color: "red",
-		textAlign: "center",
 		marginBottom: 10,
-	},
-	link: {
-		color: "blue",
-		marginTop: 20,
 		textAlign: "center",
 	},
 });
