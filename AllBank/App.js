@@ -94,6 +94,7 @@ export default function App() {
 						/>
 						<Stack.Screen name="SignUp" component={SignUp} />
 						<Stack.Screen name="Login" component={Login} />
+						<Stack.Screen name="GoalBasedSaving" component={GoalBasedSavings} />
 					</>
 				)}
 			</Stack.Navigator>

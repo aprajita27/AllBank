@@ -1,89 +1,118 @@
-// utils/geminiApi.js
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyCSM6SCzUJbrdiZEBr0XMENA8jnvJYivD8";
+import GoogleGenerativeAI from "@google/generative-ai";
+
+const API_KEY = "AIzaSyCSM6SCzUJbrdiZEBr0XMENA8jnvJYivD8"; 
+const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+const DEFAULT_CONTEXT = `
+  You are a financial assistant AI specializing in analyzing and optimizing investment funds.
+  Provide clear and actionable insights based on the given data.
+  `;
 
 /**
- * Sends fund data to Gemini AI for analysis.
+ * Analyzes funds using Gemini Generative AI.
  * @param {Array} funds - Array of fund objects.
- * @returns {Promise} - Response from Gemini AI.
+ * @returns {Promise} - AI-generated analysis.
  */
 export const analyzeFunds = async (funds) => {
   try {
-    const response = await fetch(GEMINI_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt: {
-          text: `Analyze these funds and provide investment scenarios: ${JSON.stringify(funds)}`,
-        },
-      }),
-    });
+    const formattedFunds = funds
+      .map(
+        (fund, index) =>
+          `${index + 1}. Fund Name: ${fund.fundName}, Total Invested: ${
+            fund.totalInvested
+          }, Current Value: ${fund.currentValue}, Liquidity: ${
+            fund.liquidityType
+          }, Lock-in Period: ${fund.lockInPeriod}, Redemption Penalty: ${
+            fund.redemptionPenalty * 100
+          }%.`
+      )
+      .join("\n");
 
-    if (!response.ok) {
-      throw new Error(`Gemini AI Error: ${response.statusText}`);
-    }
+    const prompt = `
+        ${DEFAULT_CONTEXT}
+        Analyze the following funds and provide investment scenarios:
+        ${formattedFunds}
+        Do not use Markdown in response
+      `;
 
-    const data = await response.json();
-    return data.candidates[0].output; // Extract the response text
+    const result = await model.generateContent(prompt);
+
+    return result.response?.text() || "No analysis provided.";
   } catch (error) {
-    console.error("Error analyzing funds:", error);
+    console.error("Error analyzing funds with Gemini:", error);
     throw error;
   }
 };
 
 /**
- * Sends fund data to optimize liquidity using Gemini AI.
+ * Optimizes liquidity using Gemini Generative AI.
  * @param {Array} funds - Array of fund objects.
- * @returns {Promise} - Response from Gemini AI.
+ * @returns {Promise} - AI-generated liquidity insights.
  */
 export const optimizeLiquidity = async (funds) => {
   try {
-    const response = await fetch(GEMINI_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt: {
-          text: `Optimize liquidity for these funds: ${JSON.stringify(funds)}`,
-        },
-      }),
-    });
+    const formattedFunds = funds
+      .map(
+        (fund, index) =>
+          `${index + 1}. Fund Name: ${fund.fundName}, Total Invested: ${
+            fund.totalInvested
+          }, Current Value: ${fund.currentValue}, Liquidity: ${
+            fund.liquidityType
+          }, Lock-in Period: ${fund.lockInPeriod}, Redemption Penalty: ${
+            fund.redemptionPenalty * 100
+          }%.`
+      )
+      .join("\n");
 
-    if (!response.ok) {
-      throw new Error(`Gemini AI Error: ${response.statusText}`);
-    }
+    const prompt = `
+        ${DEFAULT_CONTEXT}
+        Optimize liquidity for the following funds:
+        ${formattedFunds}
+        Do not use Markdown in response
+      `;
 
-    const data = await response.json();
-    return data.candidates[0].output; // Extract the response text
+    const result = await model.generateContent(prompt);
+
+    return result.response?.text() || "No optimization insights provided.";
   } catch (error) {
-    console.error("Error optimizing liquidity:", error);
+    console.error("Error optimizing liquidity with Gemini:", error);
     throw error;
   }
 };
 
 /**
- * Fetches redemption alerts for funds using Gemini AI.
+ * Fetches redemption alerts using Gemini Generative AI.
  * @param {Array} funds - Array of fund objects.
- * @returns {Promise} - Response from Gemini AI.
+ * @returns {Promise} - AI-generated redemption alerts.
  */
 export const fetchRedemptionAlerts = async (funds) => {
   try {
-    const response = await fetch(GEMINI_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt: {
-          text: `Generate redemption alerts for these funds: ${JSON.stringify(funds)}`,
-        },
-      }),
-    });
+    const formattedFunds = funds
+      .map(
+        (fund, index) =>
+          `${index + 1}. Fund Name: ${fund.fundName}, Total Invested: ${
+            fund.totalInvested
+          }, Current Value: ${fund.currentValue}, Liquidity: ${
+            fund.liquidityType
+          }, Lock-in Period: ${fund.lockInPeriod}, Redemption Penalty: ${
+            fund.redemptionPenalty * 100
+          }%.`
+      )
+      .join("\n");
 
-    if (!response.ok) {
-      throw new Error(`Gemini AI Error: ${response.statusText}`);
-    }
+    const prompt = `
+        ${DEFAULT_CONTEXT}
+        Generate redemption alerts for the following funds:
+        ${formattedFunds}
+        Do not use Markdown in response
+      `;
 
-    const data = await response.json();
-    return data.candidates[0].output; // Extract the response text
+    const result = await model.generateContent(prompt);
+
+    return result.response?.text() || "No redemption alerts provided.";
   } catch (error) {
-    console.error("Error fetching redemption alerts:", error);
+    console.error("Error fetching redemption alerts with Gemini:", error);
     throw error;
   }
 };
