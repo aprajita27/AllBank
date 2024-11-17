@@ -10,12 +10,43 @@ import {
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 import BackButton from "./BackButton";
+import * as ImagePicker from "expo-image-picker";
 
 export default function SendMoney({ navigation }) {
 	const [receiverAccount, setReceiverAccount] = useState("");
 	const [routingNumber, setRoutingNumber] = useState("");
 	const [amount, setAmount] = useState("");
 	const [loading, setLoading] = useState(false);
+
+	const handleUploadFromGallery = async () => {
+		try {
+			const result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ImagePicker.MediaTypeOptions.Images,
+				allowsEditing: false,
+				base64: true,
+			});
+
+			if (!result.canceled) {
+				// Mock decoding QR code from image
+				// You can replace this mock with actual QR code parsing logic
+				const mockQRData = {
+					accountNumber: "123456789",
+					routingNumber: "987654321",
+					name: "John Doe",
+				};
+
+				setReceiverAccount(mockQRData.accountNumber);
+				setRoutingNumber(mockQRData.routingNumber);
+				Alert.alert(
+					"QR Code Parsed",
+					`Receiver: ${mockQRData.name}\nAccount Number: ${mockQRData.accountNumber}\nRouting Number: ${mockQRData.routingNumber}`
+				);
+			}
+		} catch (error) {
+			console.error("Error uploading QR code image:", error);
+			Alert.alert("Error", "Failed to upload and parse QR code.");
+		}
+	};
 
 	const handleSendMoney = async () => {
 		if (!receiverAccount || !routingNumber || !amount) {
@@ -142,6 +173,12 @@ export default function SendMoney({ navigation }) {
 					{loading ? "Sending..." : "Send Money"}
 				</Text>
 			</TouchableOpacity>
+			<TouchableOpacity
+				style={styles.uploadButton}
+				onPress={handleUploadFromGallery}
+			>
+				<Text style={styles.buttonText}>Upload QR from Gallery</Text>
+			</TouchableOpacity>
 		</View>
 	);
 }
@@ -174,6 +211,13 @@ const styles = StyleSheet.create({
 		paddingVertical: 15,
 		borderRadius: 8,
 		alignItems: "center",
+	},
+	uploadButton: {
+		backgroundColor: "#4CAF50",
+		paddingVertical: 15,
+		borderRadius: 8,
+		alignItems: "center",
+		marginTop: 15,
 	},
 	buttonText: {
 		color: "#fff",
