@@ -90,12 +90,16 @@ export default function CreateAccount({ navigation }) {
 
 		setLoading(true);
 		try {
+			// Generate a unique account number
+			const accountNumber =
+				Math.floor(Math.random() * 9000000000) + 1000000000;
+
+			// Generate a virtual card
 			const virtualCard = generateVirtualCard();
 
-			// Prepare the account data to update the schema
+			// Prepare the account data
 			const accountData = {
-				accountNumber:
-					Math.floor(Math.random() * 9000000000) + 1000000000,
+				accountNumber,
 				routingNumber: "021000021", // Static routing number
 				cardDetails: virtualCard,
 				accounts: {
@@ -118,11 +122,17 @@ export default function CreateAccount({ navigation }) {
 				addressProof: addressProof || null,
 			};
 
-			// Update the user document in Firestore
-			await updateDoc(
-				doc(db, "users", auth.currentUser.uid),
-				accountData
+			// Update the user document in Firestore with account details
+			const userRef = doc(db, "users", auth.currentUser.uid);
+			await updateDoc(userRef, accountData);
+
+			// Add a mapping in `accountMappings` collection
+			const mappingRef = doc(
+				db,
+				"accountMappings",
+				accountNumber.toString()
 			);
+			await setDoc(mappingRef, { uid: auth.currentUser.uid });
 
 			Alert.alert("Success", "Your account has been created!", [
 				{ text: "OK", onPress: () => navigation.navigate("Home") },

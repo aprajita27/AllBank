@@ -9,38 +9,43 @@ import {
 } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function Banking() {
+export default function Banking({ navigation }) {
 	const [account, setAccount] = useState(null);
+	const [loading, setLoading] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
 
 	const staticRoutingNumber = "021000021"; // Static routing number
 
-	useEffect(() => {
-		const fetchAccount = async () => {
-			try {
-				const user = auth.currentUser; // Fetch current user
-				if (user) {
-					const docRef = doc(db, "users", user.uid); // Reference the user's document
-					const docSnap = await getDoc(docRef);
+	const fetchAccount = async () => {
+		try {
+			setLoading(true);
+			const user = auth.currentUser;
+			if (user) {
+				const docRef = doc(db, "users", user.uid);
+				const docSnap = await getDoc(docRef);
 
-					if (docSnap.exists()) {
-						const userData = docSnap.data();
-						setAccount({
-							accountNumber: userData.accountNumber,
-							balance: userData.accounts.savings.currentBalance,
-							virtualCard: userData.cardDetails,
-						});
-					} else {
-						setAccount(null); // No account exists
-					}
+				if (docSnap.exists()) {
+					const userData = docSnap.data();
+					setAccount({
+						accountNumber: userData.accountNumber,
+						balance: userData.accounts.savings.currentBalance,
+						virtualCard: userData.cardDetails,
+					});
+				} else {
+					setAccount(null);
 				}
-			} catch (error) {
-				console.error("Error fetching account details:", error);
-				Alert.alert("Error", "Failed to fetch account details.");
 			}
-		};
+		} catch (error) {
+			console.error("Error fetching account details:", error);
+			Alert.alert("Error", "Failed to fetch account details.");
+		} finally {
+			setLoading(false);
+		}
+	};
 
+	useEffect(() => {
 		fetchAccount();
 	}, []);
 
@@ -59,18 +64,37 @@ export default function Banking() {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Banking</Text>
+			<View style={styles.balanceContainer}>
+				<Text style={styles.label}>Balance</Text>
+				<TouchableOpacity onPress={fetchAccount}>
+					<Ionicons name="refresh-circle" size={24} color="#7399C6" />
+				</TouchableOpacity>
+			</View>
+			<Text style={styles.value}>${balance.toFixed(2)}</Text>
 			<Text style={styles.label}>Account Number</Text>
 			<Text style={styles.value}>{accountNumber}</Text>
 			<Text style={styles.label}>Routing Number</Text>
 			<Text style={styles.value}>{staticRoutingNumber}</Text>
-			<Text style={styles.label}>Balance</Text>
-			<Text style={styles.value}>${balance.toFixed(2)}</Text>
 
 			<TouchableOpacity
 				style={styles.showCardButton}
 				onPress={() => setModalVisible(true)}
 			>
 				<Text style={styles.buttonText}>Show Card Details</Text>
+			</TouchableOpacity>
+
+			<TouchableOpacity
+				style={styles.actionButton}
+				onPress={() => navigation.navigate("TransactionDetails")}
+			>
+				<Text style={styles.buttonText}>View Transactions</Text>
+			</TouchableOpacity>
+
+			<TouchableOpacity
+				style={styles.actionButton}
+				onPress={() => navigation.navigate("SendMoney")}
+			>
+				<Text style={styles.buttonText}>Send Money</Text>
 			</TouchableOpacity>
 
 			{/* Modal for Card Details */}
@@ -136,12 +160,25 @@ const styles = StyleSheet.create({
 		color: "#555",
 		textAlign: "center",
 	},
+	balanceContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginBottom: 10,
+	},
 	showCardButton: {
 		backgroundColor: "#7399C6",
 		paddingVertical: 15,
 		borderRadius: 8,
 		alignItems: "center",
 		marginTop: 20,
+	},
+	actionButton: {
+		backgroundColor: "#4CAF50",
+		paddingVertical: 15,
+		borderRadius: 8,
+		alignItems: "center",
+		marginTop: 15,
 	},
 	buttonText: {
 		color: "#fff",

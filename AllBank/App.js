@@ -5,7 +5,8 @@ import Onboarding from "./components/Onboarding";
 import SignUp from "./components/SignUp";
 import Login from "./components/Login";
 import CreateAccount from "./components/CreateAccount";
-import SendMoney from "./components/SendMoney"; // Replace with your actual Send Money screen
+import TransactionDetails from "./components/TransactionDetails"; // Import Transactions
+import SendMoney from "./components/SendMoney"; // Import Send Money
 import Home from "./components/Home"; // Replace with your actual Home screen
 import { auth } from "./firebaseConfig"; // Import Firebase Auth
 // import initializeMockData from "./Scripts/initializeMockData";
@@ -38,6 +39,11 @@ export default function App() {
 					<>
 						<Stack.Screen name="Home" component={Home} />
 						<Stack.Screen name="SendMoney" component={SendMoney} />
+						<Stack.Screen
+							name="TransactionDetails"
+							component={TransactionDetails}
+							options={{ title: "Transactions" }}
+						/>
 						<Stack.Screen
 							name="CreateAccount"
 							component={CreateAccount}
