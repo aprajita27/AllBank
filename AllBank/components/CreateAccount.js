@@ -57,7 +57,7 @@ export default function CreateAccount({ navigation }) {
 	const generateVirtualCard = () => {
 		const cardNumber = Array(16)
 			.fill(0)
-			.map(() => Math.floor(Math.random() * 10))
+			.map((id) => Math.floor(Math.random() * 10))
 			.join(""); // Generate a 16-digit card number
 		const expiryDate = `${new Date().getMonth() + 1}/${
 			new Date().getFullYear() + 5
