@@ -215,10 +215,11 @@ export default function InvestmentDashboard() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#F7F9FB" },
-  title: { fontSize: 24, fontWeight: "bold", color: "#7399C6", marginBottom: 20 },
-  sectionHeader: { fontSize: 20, fontWeight: "bold", color: "#555", marginVertical: 10 },
+  title: { fontSize: 24, fontWeight: "bold", color: "#7399C6", marginBottom: 20, marginTop: 90 },
+  sectionHeader: { fontSize: 20, fontWeight: "bold", color: "#222", marginVertical: 10 },
   sectionCard: { padding: 15, backgroundColor: "#FFF", borderRadius: 10, marginBottom: 10 },
   fundCard: { padding: 20, backgroundColor: "#FFF", borderRadius: 10, marginBottom: 10 },
+  loanHeading: {fontWeight: "bold", color: "#222"},
   fundName: { fontSize: 18, fontWeight: "bold", color: "#333" },
   actionButton: {
     backgroundColor: "#7399C6",

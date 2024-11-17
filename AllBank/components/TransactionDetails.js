@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
 		color: "#333",
 		marginBottom: 20,
 		textAlign: "center",
+		marginTop: 90
 	},
 	transactionItem: {
 		backgroundColor: "#fff",

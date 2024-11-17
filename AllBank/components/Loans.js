@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
 		color: "#333",
 		marginBottom: 20,
 		textAlign: "center",
+		marginTop: 90
 	},
 	message: {
 		fontSize: 18,
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 	},
 	applyButton: {
-		backgroundColor: "#4CAF50",
+		backgroundColor: "#7399C6",
 		paddingVertical: 15,
 		borderRadius: 8,
 		alignItems: "center",
