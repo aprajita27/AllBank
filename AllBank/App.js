@@ -7,6 +7,7 @@ import Login from "./components/Login";
 import Insights from "./components/Insights";
 import CreateAccount from "./components/CreateAccount";
 import Home from "./components/Home"; // Replace with your actual Home screen
+import AIBanker from "./components/AIBanker";
 import { auth } from "./firebaseConfig"; // Import Firebase Auth
 
 const Stack = createStackNavigator();
@@ -39,6 +40,7 @@ export default function App() {
 							name="CreateAccount"
 							component={CreateAccount}
 						/>
+            <Stack.Screen name="AI Banker" component={AIBanker} />
 					</>
 				) : (
 					<>

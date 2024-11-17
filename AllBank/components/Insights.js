@@ -15,6 +15,7 @@ import { FontAwesome, Entypo } from "@expo/vector-icons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { GOOGLE_GEMINI_API } from "@env";
 
+
 const mockData = {
   userId: "userId123",
   name: "Anushka Hedaoo",
@@ -86,7 +87,11 @@ const GeminiChat = () => {
   
     // User message with bold formatting
     const userMessage = {
-      text: `**${mockData.name}**: ${userInput}`,
+		text: (
+			<Text>
+			  <Text style={{ fontWeight: 'bold' }}>{mockData.name}</Text>: {userInput}
+			</Text>
+		  ),
       user: true,
     };
     setMessages([...messages, userMessage]);
