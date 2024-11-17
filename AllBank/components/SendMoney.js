@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
+import BackButton from "./BackButton";
 
 export default function SendMoney({ navigation }) {
 	const [receiverAccount, setReceiverAccount] = useState("");
@@ -109,6 +110,7 @@ export default function SendMoney({ navigation }) {
 
 	return (
 		<View style={styles.container}>
+			<BackButton navigation={navigation} />
 			<Text style={styles.title}>Send Money</Text>
 			<TextInput
 				style={styles.input}

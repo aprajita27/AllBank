@@ -96,6 +96,12 @@ export default function Banking({ navigation }) {
 			>
 				<Text style={styles.buttonText}>Send Money</Text>
 			</TouchableOpacity>
+			<TouchableOpacity
+				style={styles.actionButton}
+				onPress={() => navigation.navigate("Loans")}
+			>
+				<Text style={styles.buttonText}>View Loans</Text>
+			</TouchableOpacity>
 
 			{/* Modal for Card Details */}
 			<Modal

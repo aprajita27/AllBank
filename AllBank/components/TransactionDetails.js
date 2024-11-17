@@ -11,8 +11,9 @@ import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
+import BackButton from "./BackButton";
 
-export default function TransactionDetails() {
+export default function TransactionDetails({ navigation }) {
 	const [transactions, setTransactions] = useState([]);
 
 	useEffect(() => {
@@ -80,6 +81,7 @@ export default function TransactionDetails() {
 
 	return (
 		<View style={styles.container}>
+			<BackButton navigation={navigation} />
 			<Text style={styles.title}>Transactions</Text>
 			<FlatList
 				data={transactions}
