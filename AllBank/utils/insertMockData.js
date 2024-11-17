@@ -4,7 +4,7 @@ import { db } from "../firebaseConfig";
 const insertMockData = async () => {
   const users = [
     {
-      userId: "user1",
+      userId: "1bHbZkDwWFcHEVGkdvbosV7y6K42",
       data: {
         name: "John Doe",
         email: "johndoe@example.com",
@@ -142,7 +142,7 @@ const insertMockData = async () => {
       }
     },
     {
-      userId: "user2",
+      userId: "W7joT2sXBaThemuS3499Bk3hiOk2",
       data: {
         name: "Jane Smith",
         email: "janesmith@example.com",
