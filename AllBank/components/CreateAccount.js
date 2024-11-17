@@ -11,6 +11,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
+import BackButton from "./BackButton";
 
 export default function CreateAccount({ navigation }) {
 	const [ssn, setSSN] = useState("");
@@ -147,6 +148,7 @@ export default function CreateAccount({ navigation }) {
 
 	return (
 		<View style={styles.container}>
+			<BackButton navigation={navigation} />
 			<Text style={styles.title}>Create Account</Text>
 
 			<View style={styles.fieldContainer}>

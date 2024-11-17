@@ -7,7 +7,6 @@ export default function Profile({ navigation }) {
 		try {
 			await auth.signOut();
 			Alert.alert("Success", "You have been signed out.");
-			navigation.replace("Onboarding"); // Navigate to Onboarding screen after sign-out
 		} catch (error) {
 			console.error("Error signing out:", error);
 			Alert.alert("Error", "Failed to sign out. Please try again.");

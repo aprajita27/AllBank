@@ -107,10 +107,8 @@ export default function Home({ navigation }) {
 			})}
 		>
 			<Tab.Screen name="Banking" component={Banking} />
-			<Tab.Screen
-				name="InvestmentDashboard"
-				component={InvestmentDashboard}
-			/>
+			<Tab.Screen name="InvestmentDashboard" component={InvestmentDashboard} />
+
 			<Tab.Screen name="AI Banker" component={AIBanker} />
 			<Tab.Screen name="Profile" component={Profile} />
 		</Tab.Navigator>
