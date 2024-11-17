@@ -12,7 +12,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig"; // Firestore instance
 import { auth } from "../firebaseConfig"; // Firebase Auth instance
 import Banking from "./Banking";
-import Investing from "./Investing";
+import InvestmentDashboard from "./InvestmentDashboard";
 import AIBanker from "./AIBanker";
 import Profile from "./Profile";
 
@@ -24,12 +24,13 @@ export default function Home({ navigation }) {
 
 	const checkAccountExistence = async () => {
 		try {
-			const user = auth.currentUser;
+			const user = auth.currentUser; // Get the current authenticated user
 			if (user) {
-				const docRef = doc(db, "accounts", user.uid);
-				const docSnap = await getDoc(docRef);
+				const docRef = doc(db, "users", user.uid); // Reference the user's document in the "users" collection
+				const docSnap = await getDoc(docRef); // Fetch the document snapshot
 
-				if (docSnap.exists()) {
+				if (docSnap.exists() && docSnap.data().accountNumber) {
+					// Check if accountNumber exists in the document
 					setAccountExists(true);
 				} else {
 					setAccountExists(false);
@@ -38,7 +39,7 @@ export default function Home({ navigation }) {
 		} catch (error) {
 			console.error("Error checking account existence:", error);
 		} finally {
-			setLoading(false);
+			setLoading(false); // Ensure loading state is updated
 		}
 	};
 
@@ -80,7 +81,7 @@ export default function Home({ navigation }) {
 				tabBarIcon: ({ color, size }) => {
 					let iconName;
 					if (route.name === "Banking") iconName = "card-outline";
-					else if (route.name === "Investing")
+					else if (route.name === "InvestmentDashboard")
 						iconName = "stats-chart-outline";
 					else if (route.name === "AI Banker")
 						iconName = "chatbubble-ellipses-outline";
@@ -106,7 +107,10 @@ export default function Home({ navigation }) {
 			})}
 		>
 			<Tab.Screen name="Banking" component={Banking} />
-			<Tab.Screen name="Investing" component={Investing} />
+			<Tab.Screen
+				name="InvestmentDashboard"
+				component={InvestmentDashboard}
+			/>
 			<Tab.Screen name="AI Banker" component={AIBanker} />
 			<Tab.Screen name="Profile" component={Profile} />
 		</Tab.Navigator>
