@@ -5,7 +5,7 @@ import { Ionicons } from 'react-native-vector-icons';
 import Onboarding from './components/Onboarding';
 import SignUp from './components/SignUp';
 import Login from './components/Login';
-
+import Insights from './components/Insights';
 
 
 const Tab = createBottomTabNavigator();
@@ -20,6 +20,7 @@ export default function App() {
             if (route.name === 'Dashboard') iconName = 'home-outline';
             else if (route.name === 'Transfer') iconName = 'paper-plane-outline';
             else if (route.name === 'Invest') iconName = 'stats-chart-outline';
+            else if (route.name === 'Insights') iconName = 'analytics-outline';
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: '#7399C6',
@@ -30,6 +31,7 @@ export default function App() {
         <Tab.Screen name="Onboarding" component={Onboarding} />
         <Tab.Screen name="SignUp" component={SignUp} />
         <Tab.Screen name="Login" component={Login} />
+        <Tab.Screen name="Insights" component={Insights} /> 
       </Tab.Navigator>
     </NavigationContainer>
   );
