@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig"; // Firebase configuration
+import Insights from "./Insights";
 
 const Home = ({ navigation }) => {
 	const handleSignOut = async () => {
@@ -18,6 +19,7 @@ const Home = ({ navigation }) => {
 		<View style={styles.container}>
 			<Text style={styles.welcomeText}>Welcome to the Home Screen!</Text>
 			<Button title="Sign Out" onPress={handleSignOut} />
+			<Insights/>
 		</View>
 	);
 };

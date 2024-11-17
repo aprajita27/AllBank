@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as GoogleGenerativeAI from "@google/generative-ai";
+import Markdown from "react-native-markdown-display";
 import {
   View,
   Text,
@@ -10,10 +11,44 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as Speech from "expo-speech";
-import { FontAwesome } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
+import { FontAwesome, Entypo } from "@expo/vector-icons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import { GOOGLE_GEMINI_API } from '@env';
+import { GOOGLE_GEMINI_API } from "@env";
+
+const mockData = {
+  userId: "userId123",
+  name: "Anushka Hedaoo",
+  accounts: {
+    savings: {
+      currentBalance: 20700,
+      monthlyDeposit: 500,
+      annualInterestRate: 0.04,
+      savingsGoal: 50000,
+    },
+    personalLoan: {
+      principalAmount: 9650,
+      interestRate: 0.06,
+      remainingTermMonths: 24,
+      currentMonthlyPayment: 450,
+      extraPaymentAmount: 50,
+      creditScore: 720,
+    },
+    creditCard: {
+      outstandingBalance: 2800,
+      interestRateAPR: 0.18,
+      minimumMonthlyPayment: 100,
+      currentMonthlyPayment: 200,
+      transferFees: 50,
+    },
+  },
+  transactions: [
+    { transactionId: "txn001", date: "2024-11-01", type: "deposit", amount: 500 },
+    { transactionId: "txn002", date: "2024-11-05", type: "withdrawal", amount: 300 },
+    { transactionId: "txn003", date: "2024-11-10", type: "payment", amount: 450 },
+    { transactionId: "txn004", date: "2024-11-12", type: "payment", amount: 200 },
+    { transactionId: "txn005", date: "2024-11-15", type: "deposit", amount: 1000 },
+  ],
+};
 
 const GeminiChat = () => {
   const [messages, setMessages] = useState([]);
@@ -28,7 +63,7 @@ const GeminiChat = () => {
     const startChat = async () => {
       const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = "hello! ";
+      const prompt = "Assistant: Hello! Welcome to your personalized financial assistant.";
       const result = await model.generateContent(prompt);
       const response = result.response;
       const text = response.text();
@@ -40,44 +75,100 @@ const GeminiChat = () => {
         icon: "info",
         duration: 2000,
       });
-      setMessages([
-        {
-          text,
-          user: false,
-        },
-      ]);
+      setMessages([{ text, user: false }]);
     };
-    //function call
+
     startChat();
   }, []);
 
   const sendMessage = async () => {
     setLoading(true);
-    const userMessage = { text: userInput, user: true };
+  
+    // User message with bold formatting
+    const userMessage = {
+      text: `**${mockData.name}**: ${userInput}`,
+      user: true,
+    };
     setMessages([...messages, userMessage]);
-
-    const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = userMessage.text;
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
-    setMessages([...messages, { text, user: false }]);
-    setLoading(false);
-    setUserInput("");
-
-    // if (text) {
-    //   Speech.speak(text);
-    // }
-    if (text && !isSpeaking) {
-      Speech.speak(text);
-      setIsSpeaking(true);
-      setShowStopIcon(true);
+  
+    // Construct the prompt with default user information
+    const userData = mockData;
+    const defaultContext = `
+      User Profile:
+      - Name: ${userData.name}
+      - Savings Account: 
+        - Balance: $${userData.accounts.savings.currentBalance}
+        - Monthly Deposit: $${userData.accounts.savings.monthlyDeposit}
+        - Annual Interest Rate: ${userData.accounts.savings.annualInterestRate * 100}%
+        - Savings Goal: $${userData.accounts.savings.savingsGoal}
+      - Personal Loan:
+        - Principal Amount: $${userData.accounts.personalLoan.principalAmount}
+        - Interest Rate: ${userData.accounts.personalLoan.interestRate * 100}%
+        - Remaining Term: ${userData.accounts.personalLoan.remainingTermMonths} months
+        - Current Monthly Payment: $${userData.accounts.personalLoan.currentMonthlyPayment}
+        - Extra Payment: $${userData.accounts.personalLoan.extraPaymentAmount}
+        - Credit Score: ${userData.accounts.personalLoan.creditScore}
+      - Credit Card:
+        - Outstanding Balance: $${userData.accounts.creditCard.outstandingBalance}
+        - APR: ${userData.accounts.creditCard.interestRateAPR * 100}%
+        - Minimum Monthly Payment: $${userData.accounts.creditCard.minimumMonthlyPayment}
+        - Current Monthly Payment: $${userData.accounts.creditCard.currentMonthlyPayment}
+        - Transfer Fees: $${userData.accounts.creditCard.transferFees}
+      - Recent Transactions:
+        ${userData.transactions
+          .map(
+            (txn) =>
+              `- ${txn.date}: ${txn.type} of $${txn.amount} (Transaction ID: ${txn.transactionId})`
+          )
+          .join("\n")}
+    `;
+  
+    // Combine the default context with the user's input query
+    const prompt = `
+      ${defaultContext}
+  
+      User query: ${userInput}
+    `;
+  
+    try {
+      const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      const text = response.text();
+  
+      // Assistant message with bold formatting
+      const assistantMessage = {
+        text: `**Assistant**: ${text}`,
+        user: false,
+      };
+  
+      // Update messages state with both user and assistant messages
+      setMessages([...messages, userMessage, assistantMessage]);
+      setLoading(false);
+      setUserInput("");
+  
+      // Speak the response if needed
+      if (text && !isSpeaking) {
+        Speech.speak(text);
+        setIsSpeaking(true);
+        setShowStopIcon(true);
+      }
+    } catch (error) {
+      console.error("Error generating response:", error);
+      const errorMessage = {
+        text: "**Assistant**: There was an error processing your request. Please try again later.",
+        user: false,
+      };
+      setMessages([...messages, userMessage, errorMessage]);
+      setLoading(false);
     }
   };
+  
+  
+  
 
   const toggleSpeech = () => {
-    console.log("isSpeaking", isSpeaking);
     if (isSpeaking) {
       Speech.stop();
       setIsSpeaking(false);
@@ -94,11 +185,21 @@ const GeminiChat = () => {
 
   const renderMessage = ({ item }) => (
     <View style={styles.messageContainer}>
-      <Text style={[styles.messageText, item.user && styles.userMessage]}>
-        {item.text}
-      </Text>
+      {item.user ? (
+        <Text style={[styles.messageText, styles.userMessage]}>{item.text}</Text>
+      ) : (
+        <Markdown style={markdownStyles}>{item.text}</Markdown>
+      )}
     </View>
   );
+
+  const markdownStyles = {
+    body: { color: "#000", fontSize: 16 },
+    strong: { fontWeight: "bold", color: "#000" }, // Bold text
+    em: { fontStyle: "italic", color: "#f0e68c" }, // Italic text
+    paragraph: { marginBottom: 10 },
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -111,25 +212,9 @@ const GeminiChat = () => {
       <View style={styles.inputContainer}>
         <TouchableOpacity style={styles.micIcon} onPress={toggleSpeech}>
           {isSpeaking ? (
-            <FontAwesome
-              name="microphone-slash"
-              size={24}
-              color="white"
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            />
+            <FontAwesome name="microphone-slash" size={24} color="white" />
           ) : (
-            <FontAwesome
-              name="microphone"
-              size={24}
-              color="white"
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            />
+            <FontAwesome name="microphone" size={24} color="white" />
           )}
         </TouchableOpacity>
         <TextInput
@@ -140,15 +225,11 @@ const GeminiChat = () => {
           style={styles.input}
           placeholderTextColor="#fff"
         />
-        {
-          //show stop icon only when speaking
-          showStopIcon && (
-            <TouchableOpacity style={styles.stopIcon} onPress={ClearMessage}>
-              <Entypo name="controller-stop" size={24} color="white" />
-            </TouchableOpacity>
-          )
-        }
-        {/* {loading && <ActivityIndicator size="large" color="black" />} */}
+        {showStopIcon && (
+          <TouchableOpacity style={styles.stopIcon} onPress={ClearMessage}>
+            <Entypo name="controller-stop" size={24} color="white" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

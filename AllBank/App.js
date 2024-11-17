@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Onboarding from "./components/Onboarding";
 import SignUp from "./components/SignUp";
 import Login from "./components/Login";
+import Insights from "./components/Insights";
 import Home from "./components/Home"; // Replace with your actual Home screen
 import { auth } from "./firebaseConfig"; // Import Firebase Auth
 
@@ -40,6 +41,7 @@ export default function App() {
 						/>
 						<Stack.Screen name="SignUp" component={SignUp} />
 						<Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Insights" component={Insights} />
 					</>
 				)}
 			</Stack.Navigator>
