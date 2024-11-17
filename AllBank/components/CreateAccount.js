@@ -9,7 +9,7 @@ import {
 	Image,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 
 export default function CreateAccount({ navigation }) {
@@ -18,7 +18,10 @@ export default function CreateAccount({ navigation }) {
 	const [addressProof, setAddressProof] = useState(null); // Address Proof image URI
 	const [isAgreed, setIsAgreed] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const [userDetails, setUserDetails] = useState({ name: "", phone: "" });
+	const [userDetails, setUserDetails] = useState({
+		name: "",
+		phoneNumber: "",
+	});
 
 	// Fetch user details from Firestore
 	useEffect(() => {
@@ -26,13 +29,15 @@ export default function CreateAccount({ navigation }) {
 			try {
 				const user = auth.currentUser;
 				if (user) {
-					const docRef = doc(db, "users", user.uid); // Firestore `users` collection
+					const docRef = doc(db, "users", user.uid);
 					const docSnap = await getDoc(docRef);
 
 					if (docSnap.exists()) {
-						const { firstName, lastName, phone } = docSnap.data();
-						const fullName = `${firstName} ${lastName}`;
-						setUserDetails({ name: fullName, phone });
+						const userData = docSnap.data();
+						setUserDetails({
+							name: userData.name,
+							phoneNumber: userData.phoneNumber,
+						});
 					} else {
 						Alert.alert(
 							"Error",
@@ -48,6 +53,18 @@ export default function CreateAccount({ navigation }) {
 
 		fetchUserDetails();
 	}, []);
+
+	const generateVirtualCard = () => {
+		const cardNumber = Array(16)
+			.fill(0)
+			.map(() => Math.floor(Math.random() * 10))
+			.join(""); // Generate a 16-digit card number
+		const expiryDate = `${new Date().getMonth() + 1}/${
+			new Date().getFullYear() + 5
+		}`; // Card expiry 5 years from now
+		const cvv = Math.floor(100 + Math.random() * 900).toString(); // Generate a 3-digit CVV
+		return { cardNumber, expiryDate, cvv };
+	};
 
 	const pickImage = async (setter) => {
 		const result = await ImagePicker.launchImageLibraryAsync({
@@ -73,20 +90,37 @@ export default function CreateAccount({ navigation }) {
 
 		setLoading(true);
 		try {
+			const virtualCard = generateVirtualCard();
+
+			// Prepare the account data to update the schema
 			const accountData = {
-				uid: auth.currentUser.uid,
-				name: userDetails.name,
-				phone: userDetails.phone,
-				ssn,
-				idProof: idProof || null, // Explicitly set to null if not provided
-				addressProof: addressProof || null, // Explicitly set to null if not provided
 				accountNumber:
 					Math.floor(Math.random() * 9000000000) + 1000000000,
-				balance: 0,
+				routingNumber: "021000021", // Static routing number
+				cardDetails: virtualCard,
+				accounts: {
+					savings: {
+						currentBalance: 0,
+						monthlyDeposit: 0,
+						annualInterestRate: 0.03,
+						savingsGoal: 0,
+					},
+					goals: [],
+					investments: {
+						funds: [],
+						simulations: [],
+					},
+					loans: [],
+					transactions: [],
+				},
+				ssn,
+				idProof: idProof || null,
+				addressProof: addressProof || null,
 			};
 
-			await setDoc(
-				doc(db, "accounts", auth.currentUser.uid),
+			// Update the user document in Firestore
+			await updateDoc(
+				doc(db, "users", auth.currentUser.uid),
 				accountData
 			);
 
@@ -112,7 +146,7 @@ export default function CreateAccount({ navigation }) {
 
 			<View style={styles.fieldContainer}>
 				<Text style={styles.label}>Phone Number</Text>
-				<Text style={styles.field}>{userDetails.phone}</Text>
+				<Text style={styles.field}>{userDetails.phoneNumber}</Text>
 			</View>
 
 			<TextInput

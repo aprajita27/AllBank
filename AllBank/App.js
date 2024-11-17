@@ -5,12 +5,15 @@ import Onboarding from "./components/Onboarding";
 import SignUp from "./components/SignUp";
 import Login from "./components/Login";
 import CreateAccount from "./components/CreateAccount";
+import SendMoney from "./components/SendMoney"; // Replace with your actual Send Money screen
 import Home from "./components/Home"; // Replace with your actual Home screen
 import { auth } from "./firebaseConfig"; // Import Firebase Auth
+// import initializeMockData from "./Scripts/initializeMockData";
 import GoalBasedSavings from "./components/GoalBasedSavings";
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import insertMockData from "./utils/insertMockData";
+
 
 const Stack = createStackNavigator();
 
@@ -20,6 +23,7 @@ export default function App() {
 
 	// Listen to authentication state changes
 	useEffect(() => {
+		// initializeMockData();
 		const unsubscribe = auth.onAuthStateChanged((user) => {
 			setIsLoggedIn(!!user); // Set true if user exists, false otherwise
 			setLoading(false); // Stop loading spinner
@@ -57,6 +61,7 @@ export default function App() {
 				{isLoggedIn ? (
 					<>
 						<Stack.Screen name="Home" component={Home} />
+						<Stack.Screen name="SendMoney" component={SendMoney} />
 						<Stack.Screen
 							name="CreateAccount"
 							component={CreateAccount}

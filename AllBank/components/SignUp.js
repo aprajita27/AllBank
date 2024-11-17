@@ -1,155 +1,3 @@
-// import React, { useState } from "react";
-// import {
-// 	View,
-// 	TextInput,
-// 	Text,
-// 	TouchableOpacity,
-// 	StyleSheet,
-// } from "react-native";
-// import * as Animatable from "react-native-animatable";
-// import { signUpUser } from "../utils/firebaseAuth"; // Firebase auth logic
-
-// const SignUp = ({ navigation }) => {
-// 	const [email, setEmail] = useState("");
-// 	const [password, setPassword] = useState("");
-// 	const [error, setError] = useState("");
-
-// 	const handleSignUp = async () => {
-// 		setError(""); // Clear previous errors
-// 		if (!email.includes("@")) {
-// 			setError("Please enter a valid email address.");
-// 			return;
-// 		}
-
-// 		if (password.length < 6) {
-// 			setError("Password must be at least 6 characters long.");
-// 			return;
-// 		}
-
-// 		try {
-// 			const { user } = await signUpUser(email, password);
-// 			console.log("User signed up successfully:", user);
-// 			navigation.navigate("Login"); // Navigate to Login screen after sign-up
-// 		} catch (err) {
-// 			setError(err.message);
-// 		}
-// 	};
-
-// 	return (
-// 		<View style={styles.container}>
-// 			<Animatable.Text animation="bounceIn" style={styles.title}>
-// 				Sign Up
-// 			</Animatable.Text>
-
-// 			{error ? (
-// 				<Animatable.Text animation="fadeIn" style={styles.error}>
-// 					{error}
-// 				</Animatable.Text>
-// 			) : null}
-
-// 			<Animatable.View
-// 				animation="slideInUp"
-// 				style={styles.inputContainer}
-// 			>
-// 				<TextInput
-// 					style={styles.input}
-// 					placeholder="Email"
-// 					value={email}
-// 					onChangeText={setEmail}
-// 					keyboardType="email-address"
-// 					autoCapitalize="none"
-// 				/>
-// 				<TextInput
-// 					style={styles.input}
-// 					placeholder="Password"
-// 					value={password}
-// 					onChangeText={setPassword}
-// 					secureTextEntry
-// 				/>
-// 			</Animatable.View>
-
-// 			<TouchableOpacity
-// 				style={styles.buttonPrimary}
-// 				onPress={handleSignUp}
-// 			>
-// 				<Text style={styles.buttonText}>Sign Up</Text>
-// 			</TouchableOpacity>
-
-// 			<TouchableOpacity onPress={() => navigation.navigate("Login")}>
-// 				<Text style={styles.footerText}>
-// 					Already have an account?{" "}
-// 					<Text style={styles.linkText}>Log In</Text>
-// 				</Text>
-// 			</TouchableOpacity>
-// 		</View>
-// 	);
-// };
-
-// const styles = StyleSheet.create({
-// 	container: {
-// 		flex: 1,
-// 		justifyContent: "center",
-// 		alignItems: "center",
-// 		backgroundColor: "#F8F9FA",
-// 		padding: 20,
-// 	},
-// 	title: {
-// 		fontSize: 32,
-// 		fontWeight: "bold",
-// 		color: "#333",
-// 		marginBottom: 20,
-// 		textAlign: "center",
-// 	},
-// 	inputContainer: {
-// 		width: "100%",
-// 		alignItems: "center",
-// 		marginBottom: 20,
-// 	},
-// 	input: {
-// 		borderWidth: 1,
-// 		borderColor: "#ccc",
-// 		backgroundColor: "#fff",
-// 		borderRadius: 8,
-// 		padding: 12,
-// 		marginBottom: 10,
-// 		fontSize: 16,
-// 		width: "80%",
-// 	},
-// 	buttonPrimary: {
-// 		backgroundColor: "#7399C6",
-// 		paddingVertical: 15,
-// 		borderRadius: 50,
-// 		width: "80%",
-// 		alignItems: "center",
-// 		marginBottom: 15,
-// 		shadowColor: "#000",
-// 		shadowOffset: { width: 0, height: 4 },
-// 		shadowOpacity: 0.3,
-// 		shadowRadius: 6,
-// 		elevation: 5,
-// 	},
-// 	buttonText: {
-// 		color: "#fff",
-// 		fontSize: 18,
-// 		fontWeight: "bold",
-// 	},
-// 	footerText: {
-// 		fontSize: 14,
-// 		color: "#333",
-// 	},
-// 	linkText: {
-// 		color: "#7399C6",
-// 		fontWeight: "bold",
-// 	},
-// 	error: {
-// 		color: "red",
-// 		marginBottom: 10,
-// 		textAlign: "center",
-// 	},
-// });
-
-// export default SignUp;
-
 import React, { useState } from "react";
 import {
 	View,
@@ -157,205 +5,154 @@ import {
 	Text,
 	TouchableOpacity,
 	StyleSheet,
+	Alert,
 } from "react-native";
-import * as Animatable from "react-native-animatable";
-import { signUpUser } from "../utils/firebaseAuth"; // Firebase Authentication logic
-import { storeUserData } from "../utils/firebaseFirestore"; // Firestore logic
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebaseConfig";
 
-const SignUp = ({ navigation }) => {
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [username, setUsername] = useState("");
-	const [phone, setPhone] = useState("");
+export default function SignUp({ navigation }) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [error, setError] = useState("");
+	const [name, setName] = useState("");
+	const [phoneNumber, setPhoneNumber] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const handleSignUp = async () => {
-		setError(""); // Clear previous errors
+		if (!email || !password || !name || !phoneNumber) {
+			Alert.alert("Error", "All fields are required.");
+			return;
+		}
 
-		// Validate fields
-		if (
-			!firstName ||
-			!lastName ||
-			!username ||
-			!phone ||
-			!email ||
-			!password
-		) {
-			setError("All fields are required.");
-			return;
-		}
-		if (!email.includes("@")) {
-			setError("Please enter a valid email address.");
-			return;
-		}
 		if (password.length < 6) {
-			setError("Password must be at least 6 characters long.");
+			Alert.alert(
+				"Error",
+				"Password must be at least 6 characters long."
+			);
 			return;
 		}
-		if (!/^\d{10}$/.test(phone)) {
-			setError("Please enter a valid 10-digit phone number.");
-			return;
-		}
+
+		setLoading(true);
 
 		try {
-			// Create user in Firebase Authentication
-			const { user } = await signUpUser(email, password);
-			console.log("User signed up successfully:", user);
-
-			// Store additional user info in Firestore
-			await storeUserData(user.uid, {
-				firstName,
-				lastName,
-				username,
-				phone,
+			const userCredential = await createUserWithEmailAndPassword(
+				auth,
 				email,
+				password
+			);
+			const user = userCredential.user;
+
+			// Save user data to Firestore
+			await setDoc(doc(db, "users", user.uid), {
+				name,
+				email,
+				phoneNumber,
+				accounts: {
+					savings: {
+						currentBalance: 0,
+					},
+					goals: [],
+					investments: {
+						funds: [],
+					},
+					transactions: [],
+				},
 			});
 
-			// Navigate to Login screen
-			// navigation.navigate("Login");
-		} catch (err) {
-			setError(err.message);
+			Alert.alert("Success", "Account created successfully.");
+			navigation.navigate("Login");
+		} catch (error) {
+			Alert.alert("Sign-Up Failed", error.message);
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	return (
 		<View style={styles.container}>
-			<Animatable.Text animation="bounceIn" style={styles.title}>
-				Sign Up
-			</Animatable.Text>
-
-			{error ? (
-				<Animatable.Text animation="fadeIn" style={styles.error}>
-					{error}
-				</Animatable.Text>
-			) : null}
-
-			<Animatable.View
-				animation="slideInUp"
-				style={styles.inputContainer}
-			>
-				<TextInput
-					style={styles.input}
-					placeholder="First Name"
-					value={firstName}
-					onChangeText={setFirstName}
-				/>
-				<TextInput
-					style={styles.input}
-					placeholder="Last Name"
-					value={lastName}
-					onChangeText={setLastName}
-				/>
-				<TextInput
-					style={styles.input}
-					placeholder="Username"
-					value={username}
-					onChangeText={setUsername}
-				/>
-				<TextInput
-					style={styles.input}
-					placeholder="Phone Number"
-					value={phone}
-					onChangeText={setPhone}
-					keyboardType="numeric"
-				/>
-				<TextInput
-					style={styles.input}
-					placeholder="Email"
-					value={email}
-					onChangeText={setEmail}
-					keyboardType="email-address"
-					autoCapitalize="none"
-				/>
-				<TextInput
-					style={styles.input}
-					placeholder="Password"
-					value={password}
-					onChangeText={setPassword}
-					secureTextEntry
-				/>
-			</Animatable.View>
-
+			<Text style={styles.title}>Sign Up</Text>
+			<TextInput
+				style={styles.input}
+				placeholder="Full Name"
+				value={name}
+				onChangeText={setName}
+			/>
+			<TextInput
+				style={styles.input}
+				placeholder="Phone Number"
+				value={phoneNumber}
+				onChangeText={setPhoneNumber}
+				keyboardType="phone-pad"
+			/>
+			<TextInput
+				style={styles.input}
+				placeholder="Email"
+				value={email}
+				onChangeText={setEmail}
+				keyboardType="email-address"
+				autoCapitalize="none"
+			/>
+			<TextInput
+				style={styles.input}
+				placeholder="Password"
+				value={password}
+				onChangeText={setPassword}
+				secureTextEntry
+			/>
 			<TouchableOpacity
-				style={styles.buttonPrimary}
+				style={[styles.button, loading && styles.disabledButton]}
 				onPress={handleSignUp}
+				disabled={loading}
 			>
-				<Text style={styles.buttonText}>Sign Up</Text>
-			</TouchableOpacity>
-
-			<TouchableOpacity onPress={() => navigation.navigate("Login")}>
-				<Text style={styles.footerText}>
-					Already have an account?{" "}
-					<Text style={styles.linkText}>Log In</Text>
+				<Text style={styles.buttonText}>
+					{loading ? "Creating Account..." : "Sign Up"}
 				</Text>
+			</TouchableOpacity>
+			<TouchableOpacity onPress={() => navigation.navigate("Login")}>
+				<Text style={styles.link}>Already have an account? Log In</Text>
 			</TouchableOpacity>
 		</View>
 	);
-};
+}
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: "center",
-		alignItems: "center",
-		backgroundColor: "#F8F9FA",
 		padding: 20,
+		backgroundColor: "#F8F9FA",
 	},
 	title: {
-		fontSize: 32,
+		fontSize: 28,
 		fontWeight: "bold",
-		color: "#333",
-		marginBottom: 20,
 		textAlign: "center",
-	},
-	inputContainer: {
-		width: "100%",
-		alignItems: "center",
 		marginBottom: 20,
 	},
 	input: {
 		borderWidth: 1,
 		borderColor: "#ccc",
-		backgroundColor: "#fff",
-		borderRadius: 8,
-		padding: 12,
+		padding: 10,
 		marginBottom: 10,
+		borderRadius: 5,
 		fontSize: 16,
-		width: "80%",
 	},
-	buttonPrimary: {
+	button: {
 		backgroundColor: "#7399C6",
-		paddingVertical: 15,
-		borderRadius: 50,
-		width: "80%",
+		padding: 15,
+		borderRadius: 8,
 		alignItems: "center",
-		marginBottom: 15,
-		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.3,
-		shadowRadius: 6,
-		elevation: 5,
+	},
+	disabledButton: {
+		backgroundColor: "#A0A0A0",
 	},
 	buttonText: {
 		color: "#fff",
-		fontSize: 18,
+		fontSize: 16,
 		fontWeight: "bold",
 	},
-	footerText: {
-		fontSize: 14,
-		color: "#333",
-	},
-	linkText: {
-		color: "#7399C6",
-		fontWeight: "bold",
-	},
-	error: {
-		color: "red",
-		marginBottom: 10,
+	link: {
+		marginTop: 10,
 		textAlign: "center",
+		color: "#7399C6",
 	},
 });
-
-export default SignUp;

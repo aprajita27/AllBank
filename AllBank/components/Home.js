@@ -65,12 +65,13 @@ export default function Home({ navigation }) {
 
 	const checkAccountExistence = async () => {
 		try {
-			const user = auth.currentUser;
+			const user = auth.currentUser; // Get the current authenticated user
 			if (user) {
-				const docRef = doc(db, "accounts", user.uid);
-				const docSnap = await getDoc(docRef);
+				const docRef = doc(db, "users", user.uid); // Reference the user's document in the "users" collection
+				const docSnap = await getDoc(docRef); // Fetch the document snapshot
 
-				if (docSnap.exists()) {
+				if (docSnap.exists() && docSnap.data().accountNumber) {
+					// Check if accountNumber exists in the document
 					setAccountExists(true);
 				} else {
 					setAccountExists(false);
@@ -79,7 +80,7 @@ export default function Home({ navigation }) {
 		} catch (error) {
 			console.error("Error checking account existence:", error);
 		} finally {
-			setLoading(false);
+			setLoading(false); // Ensure loading state is updated
 		}
 	};
 
